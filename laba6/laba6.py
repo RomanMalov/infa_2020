@@ -2,6 +2,10 @@ import pygame
 from pygame.draw import *
 from random import randint
 
+''' IN this game you need to be alive as long as you can. 
+You die if number of balls is over 10. 
+Every 2 seconds new ball appears
+5 ball is superball. '''
 pygame.init()
 
 FPS = 60
@@ -19,6 +23,7 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 balls = []
 time = 0
+# superball attributes
 super_exist = False
 super_vx = 0
 super_vy = 0
@@ -28,7 +33,7 @@ super_y = 0
 
 def new_ball():
     global balls
-    '''рисует новый шарик '''
+    ''' draws new ball '''
     x = randint(100, 1100)
     y = randint(100, 900)
     r = randint(30, 100)
@@ -46,14 +51,14 @@ finished = False
 lose = False
 while not finished:
     clock.tick(FPS)
-    count = len(balls) + super_exist
+    count = len(balls) + super_exist  # number of balls
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             finished = True
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-
+            # checking usual balls
             if not lose:
                 mouse_x, mouse_y = event.pos
                 new_balls = []
@@ -61,9 +66,10 @@ while not finished:
                     if not (ball[0] - mouse_x) ** 2 + (ball[1] - mouse_y) ** 2 <= (ball[2] ** 2):
                         new_balls.append(ball)
                 balls = new_balls
+            # checking superball
             if super_exist:
                 if (time // 10) % 2 == 0:
-                    if 0<(-super_x+mouse_x)<200 and 0<(-super_y+mouse_y)<(time % 10 * 20 + 20):
+                    if 0 < (-super_x + mouse_x) < 200 and 0 < (-super_y + mouse_y) < (time % 10 * 20 + 20):
                         super_exist = False
 
     if not lose:
@@ -89,7 +95,8 @@ while not finished:
                 super_vy *= -1
             screen.blit(super_surface1, (super_x, super_y))
 
-    if time % 50 == 0 and not lose:
+    if time % 60 == 0 and not lose:
+        # every 2 seconds appears ball or superball
         if count == 4 and not super_exist:
             super_exist = True
             super_x = randint(100, 1100)
@@ -115,7 +122,7 @@ while not finished:
         lose = True
         screen.fill(BLACK)
         text3 = f2.render('WASTED', 1, (255, 30, 40))
-        screen.blit(text3, (w / 2-500, h / 2-300))
+        screen.blit(text3, (w / 2 - 500, h / 2 - 300))
 
     if count > 0:
         text2 = f1.render('Number of balls: ' + str(count), 1,
